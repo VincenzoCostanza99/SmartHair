@@ -1,0 +1,68 @@
+package test;
+
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import domain.*;
+
+public class PrenotazioneTest {
+
+    private Cliente cliente;
+    private Parrucchiere parrucchiere;
+
+    @BeforeEach
+    void setUp() {
+        cliente = new Cliente("Mario", "Rossi", "mario.rossi@email.com");
+        parrucchiere = new Parrucchiere("Vincenzo");
+    }
+
+    @Test
+    void testCostruttoreAssegnaDatiCorrettamente() {
+        Prenotazione p = new Prenotazione("10", "martedi", "taglio", cliente, parrucchiere);
+
+        assertEquals("10", p.getOrario());
+        assertEquals("martedi", p.getGiorno());
+        assertEquals("taglio", p.getServizio());
+        assertEquals(cliente, p.getCliente());
+        assertEquals(parrucchiere, p.getParrucchiere());
+    }
+
+    @Test
+    void testCodiceIncrementaleUnivoco() {
+        Prenotazione p1 = new Prenotazione("9", "martedi", "piega", cliente, parrucchiere);
+        Prenotazione p2 = new Prenotazione("11", "mercoledi", "colore", cliente, parrucchiere);
+
+        assertNotEquals(p1.getCodice(), p2.getCodice(),
+                "Ogni prenotazione deve avere un codice univoco e incrementale");
+        assertTrue(p2.getCodice() > p1.getCodice(),
+                "Il codice della seconda prenotazione deve essere maggiore della prima");
+    }
+
+    @Test
+    void testGetterClienteEParrucchiereNonNull() {
+        Prenotazione p = new Prenotazione("9", "venerdi", "taglio", cliente, parrucchiere);
+        assertNotNull(p.getCliente());
+        assertNotNull(p.getParrucchiere());
+    }
+
+    @Test
+    void testToStringContieneInformazioniChiave() {
+        Prenotazione p = new Prenotazione("15", "sabato", "colore", cliente, parrucchiere);
+        String text = p.toString().toLowerCase();
+
+        assertTrue(text.contains("colore"), "toString() deve contenere il servizio");
+        assertTrue(text.contains("sabato"), "toString() deve contenere il giorno");
+        assertTrue(text.contains("vincenzo"), "toString() deve contenere il nome del parrucchiere");
+        assertTrue(text.contains("mario.rossi@email.com"), "toString() deve contenere l'email del cliente");
+    }
+
+    @Test
+    void testClienteDiversoCreaPrenotazioneDiversa() {
+        Cliente altro = new Cliente("Luca", "Bianchi", "luca.bianchi@email.com");
+        Prenotazione p1 = new Prenotazione("9", "martedi", "taglio", cliente, parrucchiere);
+        Prenotazione p2 = new Prenotazione("9", "martedi", "taglio", altro, parrucchiere);
+
+        assertNotEquals(p1.getCliente(), p2.getCliente(),
+                "Le prenotazioni devono riferirsi a clienti diversi");
+    }
+}
